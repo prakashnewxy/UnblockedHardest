@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>unbl0cked_hardest v1</title>
+    <style>
+      body {
+        background-color: black;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      
+      button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      
+      input {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .wave-animation {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        background-color: black;
+        overflow: hidden;
+      }
+
+      .wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 500%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 10px,
+          grey 20px,
+          darkgrey 30px
+        );
+        background-size: 200% 30px;
+        animation: wave 200s linear infinite;
+      }
+
+      @keyframes wave {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .top-bar {
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      }
+
+      .top-bar h1 {
+        margin: 0;
+      }
+
+      .clock {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .change-list-button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+
+      .change-list-menu {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: #000;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        color: #fff;
+        border-radius: 10px;
+        opacity: 0.9;
+      }
+
+      .change-list-menu h2 {
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .change-list-menu label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .change-list-menu input {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+      }
+
+      .change-list-menu button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+
+      .app-list {
+        list-style-type: none;
+        padding: 0;
+        text-align: center;
+        height: calc(100% - 64px);
+        overflow: auto;
+      }
+
+      .app-entry {
+        margin: 10px;
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        padding: 10px;
+        color: #fff;
+      }
+
+      .app-entry:hover {
+        background-color: #333;
+      }
+
+      .app-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: #000;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border-radius: 10px;
+        opacity: 0.9;
+      }
+
+      .popup-close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+      }
+
+      .bottom-bar {
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+
+      .download-button {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wave-animation">
+      <div class="wave"></div>
+    </div>
+    <ul class="app-list" id="appList">
+    </ul>
+    <div class="app-popup" id="appPopup">
+      <span class="popup-close" onclick="closePopup()">X</span>
+      <h2 id="popupAppName"></h2>
+      <p id="popupAppDescription"></p>
+      <button id="popupRunButton">Run</button>
+      <button id="downloadSourceButton" class="download-button">
+        Download Source
+      </button>
+      <button id="downloadHtmlButton" class="download-button">
+        Download Single-file HTML
+      </button>
+    </div>
+    <div class="change-list-menu" id="changeListMenu">
+      <h2>Change List</h2>
+      <hr>
+      <h4>Official - https://uh.jscraft2.repl.co/uh.json</h4>
+      <h4>(Submit a pull request at https://github.com/SevenworksDev/UnblockedHardest to create a new listing here)</h4>
+      <input type="text" id="newAppsJsonUrl" placeholder="Enter URL" />
+      <button onclick="changeAppListUrl()">Change</button>
+    </div>
+    <div class="top-bar">
+      <h1>unbl0cked_hardest (v1)</h1>
+      <div class="clock" id="clock"></div>
+      <div class="change-list-button" onclick="openChangeListMenu()">
+        Change List
+      </div>
+    </div>
+    <script>
+      let ctrlKeyPressCount = 0;
+
+      document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey) {
+          resetToDefault();
+        }
+      });
+
+      function openChangeListMenu() {
+        const changeListMenu = document.getElementById("changeListMenu");
+        changeListMenu.style.display = "block";
+      }
+
+      function closeChangeListMenu() {
+        const changeListMenu = document.getElementById("changeListMenu");
+        changeListMenu.style.display = "none";
+      }
+
+      function changeAppListUrl() {
+        const newAppsJsonUrlInput = document.getElementById("newAppsJsonUrl");
+        const newAppsJsonUrl = newAppsJsonUrlInput.value;
+        localStorage.setItem("appsJsonUrl", newAppsJsonUrl);
+        fetchAndLoadAppList(newAppsJsonUrl);
+        closeChangeListMenu();
+      }
+
+      function resetToDefault() {
+        ctrlKeyPressCount++;
+        if (ctrlKeyPressCount === 9) {
+          localStorage.removeItem("appsJsonUrl");
+          ctrlKeyPressCount = 0;
+          fetchAndLoadAppList("https://uh.jscraft2.repl.co/uh.json");
+        }
+      }
+
+      function fetchAndLoadAppList(url) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const appList = document.getElementById("appList");
+            appList.innerHTML = "";
+            data.forEach((app) => {
+              const listItem = document.createElement("li");
+              listItem.classList.add("app-entry");
+              listItem.innerHTML = `
+                            <img src="${app.icon}" alt="${app.name}" width="32" height="32">
+                            ${app.name}
+                        `;
+              listItem.onclick = () => openPopup(app);
+              appList.appendChild(listItem);
+            });
+          });
+      }
+
+      function openPopup(app) {
+        const popup = document.getElementById("appPopup");
+        const popupAppName = document.getElementById("popupAppName");
+        const popupAppDescription = document.getElementById(
+          "popupAppDescription"
+        );
+        const popupRunButton = document.getElementById("popupRunButton");
+        const downloadSourceButton = document.getElementById(
+          "downloadSourceButton"
+        );
+        const downloadHtmlButton =
+          document.getElementById("downloadHtmlButton");
+
+        popupAppName.textContent = app.name;
+        popupAppDescription.textContent = app.description;
+        popupRunButton.onclick = () => openAppInNewWindow(app.url);
+
+        if (app.dl) {
+          downloadSourceButton.style.display = "block";
+          downloadSourceButton.onclick = () => downloadFile(app.dl, app.name+".uh.zip");
+        } else {
+          downloadSourceButton.style.display = "none";
+        }
+
+        if (app.html) {
+          downloadHtmlButton.style.display = "block";
+          downloadHtmlButton.onclick = () => downloadFile(app.html, app.name+".uh.html");
+        } else {
+          downloadHtmlButton.style.display = "none";
+        }
+
+        popup.style.display = "block";
+      }
+
+      function openAppInNewWindow(url) {
+        const newWindow = window.open("about:blank", "_blank");
+        if (newWindow) {
+          newWindow.document.write(
+            '<iframe src="' +
+              url +
+              '" frameborder="0" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe>'
+          );
+        } else {
+          alert(
+            "Browser prevented popups, Change your security settings."
+          );
+        }
+      }
+
+      function closePopup() {
+        const popup = document.getElementById("appPopup");
+        popup.style.display = "none";
+      }
+
+      function updateClock() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const formattedHours = hours % 12 || 12;
+        const timeString = `${formattedHours}:${String(minutes).padStart(
+          2,
+          "0"
+        )} ${ampm}`;
+        const clock = document.getElementById("clock");
+        clock.textContent = timeString;
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      const storedAppsJsonUrl = localStorage.getItem("appsJsonUrl");
+      const initialAppsJsonUrl = storedAppsJsonUrl || "https://uh.jscraft2.repl.co/uh.json";
+      fetchAndLoadAppList(initialAppsJsonUrl);
+
+      function downloadFile(url, fileName) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+      }
+    </script>
+  </body>
+</html>
